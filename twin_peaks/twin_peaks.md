@@ -185,7 +185,7 @@ episode_tibble <- all_episodes %>%
     director = map_chr(., "director"),
     composer = map_chr(., "composer", .null = NA),
     season = map_chr(., "season", .null = NA),
-    air_date = lubridate::as_date(unlist(map(., ~lubridate::mdy(.$date)))),
+    air_date = lubridate::mdy(map_chr(., "date")),
     cast = map(., clean_cast), # a custom function to remove irrelevant text from the cast data
     characters = map(cast, stringr::str_extract, pattern = "(?<= as ).*")
   )}
@@ -325,7 +325,7 @@ Looking at the chart, there are no suprises that Special Agent Cooper
 tops the list of appearances, but it’s somewhat interesting to notice
 that he shares that position with Sherriff Truman, Donna Hayward, and
 even Benjamin Horne. Maybe the lesson here is that Twin Peaks isn’t a
-show about a particular character; it’s a show about a town.
+show about a particular character; it’s a show about the whole town.
 
 -----
 

@@ -138,7 +138,7 @@ episode_tibble <- all_episodes %>%
     director = map_chr(., "director"),
     composer = map_chr(., "composer", .null = NA),
     season = map_chr(., "season", .null = NA),
-    air_date = lubridate::as_date(unlist(map(., ~lubridate::mdy(.$date)))),
+    air_date = lubridate::mdy(map_chr(., "date")),
     cast = map(., clean_cast), # a custom function to remove irrelevant text from the cast data
     characters = map(cast, stringr::str_extract, pattern = "(?<= as ).*")
   )}
