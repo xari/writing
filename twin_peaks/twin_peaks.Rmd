@@ -220,7 +220,7 @@ appearances_per_character %>%
   labs(y = "Total appearances", title="Twin Peaks characters by their appearances") + theme_minimal() + theme(legend.position="none", axis.title.y=element_blank())
 ```
 
-Looking at the chart, there are no suprises that Special Agent Cooper tops the list of appearances, but it's somewhat interesting to notice that he shares that position with Sherriff Truman, Donna Hayward, and even Benjamin Horne. Maybe the lesson here is that Twin Peaks isn't a show about a particular character; it's a show about a town.
+Looking at the chart, there are no suprises that Special Agent Cooper tops the list of appearances, but it's somewhat interesting to notice that he shares that position with Sherriff Truman, Donna Hayward, and even Benjamin Horne. Maybe the lesson here is that Twin Peaks isn't a show about a particular character; it's a show about the whole town.
 
 ---
 
