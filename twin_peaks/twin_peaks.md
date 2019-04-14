@@ -1,46 +1,66 @@
 
-I’ve been *using* data for several years. First as a supply chain
-analyst, compiling pricing data in MS Excel for solar panels in the US,
-and later as a web developer, engineering user-interfaces that produce
-data (think: forms, etc.).
+Being an employee of the EPFL Extension School has it’s perks.
 
-But when I was an analyst, my data lacked depth. Mostly, I was compiling
-pivot-tables in MS Excel of price quotes that I had sourced directly
-from my own suppliers. Occasionally I would get access to some industry
-publication data that I could mix-in, but I didn’t know how to go-out
-and get more of my own data, and even if I knew where to look for it, I
-wouldn’t have known how to extract it and use it.
+For the past month, I’ve been following one of our courses, [“50 Things
+You Need to Know About
+Data”](https://exts.epfl.ch/courses-programs/50-things-you-need-to-know-about-data),
+an introductory course designed to teach the basics of the tools and
+technologies needed to work with data in the digital age.
 
-As a web developer, I became good at creating content management systems
-that over-time would collect plenty of data. Articles, user-comments,
-likes, page-views, —all of these are valuable sources of data that can
-tell a story about a publication and it’s customers. But even though I
-could create the system itself, I was at a loss when I needed to
-investigate how people were using the application that I built.
+Specifically, the course teaches how to store, structure, clean,
+visualize, and analyze data using the R programming language —and it
+provides a broad survey of topics like machine learning, data privacy,
+and other topics as well. Having finally made my way through the
+technical portion of the course, I thought that writing a data article
+about my favorite show, Twin Peaks, would be the perfect opportunity to
+put *some* of what I learned in the course to the test.
 
-For example; I knew how to query the publication’s database, and I could
-run basic analysis on its tables using SQL, or importing a dump of the
-database into Excel to do some analysis of it there. But if someone were
-to ask me how to integrate the product data to revenue data from our
-accounting software, and to combine those with customer data from
-Salesforce —I wouldn’t have known where to begin.
+Before we begin, I want to properly represent my technical background.
+As a course developer for the Extension School, I create courses about
+programming for web applications. My area of expertise is the JavaScript
+programming language, and it’s been several years since I worked as a
+business analyst using MS Excel spreadsheet software. A month ago I
+wrote my first line of R code, and this course is the only instruction
+that I pursued to learn R. But I do happen to share an office with the
+creator of the course, Xavier, whose time and enthusiasm I owe to much
+of my progress.
 
-Thankfully, one thing that I’ve learned since university is that new
-technical skills aren’t hard to learn, given enough time and motivation.
-Since I have the good fortune to work for an online education provider,
-I decided to start following the Extension School course titled [“50
-Things You Need to Know About
-Data”](https://exts.epfl.ch/courses-programs/50-things-you-need-to-know-about-data).
-This course starts-off comfortably, exploring conventional ways of
-visualizing and storing data using spreadsheets, but it isn’t long
-before it introduces R, a programming language designed for working with
-data.
+But despite my more advanced technical background, this course *is* for
+beginners. If you’ve worked with basic spreadsheets before, you’ll find
+the material *very* approachable. And sure; it helped to have Xavier
+sitting at a desk across the room from me, but if you take the course
+you’ll get to chat with him for a half-hour each week about any course
+topic that you’d like to discuss.
 
-After two weeks of using R to manipulate the example data from the
-course (sales reporting data, and real-world AirBnb listings for the
-state of Texas), my colleague Xavier, the creator of the course,
-challenged me to use what I learned to study the popularity of my
-favorite TV show, Twin Peaks. Here’s how the conversation went:
+This article won’t showcase *all* of what I learned in the course. The
+course teaches how to work with data from many different sources,
+including databases, `.csv` files, MS Excel spreadsheets, Rest APIs, and
+more. The course also takes-on a more corporate focus in its choice of
+data. For example; AirBnB rentals for the entire state of Texas is one
+of the data sources that you get to play-around with if you take the
+course.
+
+But I’m a web guy, so this article focuses on a particularly crafty data
+source: web scraping.
+
+-----
+
+You remember Twin Peaks, don’t you? The show about owls, strong coffee,
+and the mystery surrounding the death of a girl named Laura Palmer?
+
+This show is a favorite of mine, and I think that if you ever make the
+time to watch it, you’ll enjoy it too.
+
+But don’t take it from me. Take it from IMDB, the Internet Movie
+Database, where the lowest rating for any episode of the original series
+was 7.5 out-of 10.
+
+If you spend-enough time around me, you’re bound to get bitten by the
+Twin Peaks bug too, and this year I finally managed to convince my
+colleague to watch the show too. As the creator of the course, he was
+aware of my progress, and challenged me to put my skills to the test by
+creating a couple of charts about the show. Here’s how the conversation
+went:
 
 ![Broad City Post](./broad_city_post.png)
 
@@ -51,241 +71,893 @@ bring viewers Breaking Bad, Stranger Things, another other modern
 favorites.
 
 In [the
-tweet](https://twitter.com/katiesegreti/status/1111729535266013184), the
-author shares two charts that she made about a show that she watches,
-Broad City. The first chart describes the popularity of the show through
-Internet Movie Database ratings for each episode, and the second
-features the number of episodes that each character appeared-in
-throughout the show’s five seasons.
+tweet](https://twitter.com/katiesegreti/status/1111729535266013184),
+[Katie Segretti](http://data-chips.com/) shares two charts that she made
+about one of her favorite shows; Broad City.
 
 ![Broad City Tweet](./broad_city.png)
 
-But I didn’t know where I would get the data from to make a similar
-chart about Twin Peaks. You see; Twin Peaks isn’t the monthly
-publication from the Bureau of Labor Statistics that details how many
-new jobs were added to the economy. It’s an obscure-enough subject that
-there isn’t a tidy package of published data about the show that I could
-download, or an API from which I could request it.
-
-A close-up of the first chart shows us the IMDB rating for each episode,
-so at the very least, we would need to get the title of each episode,
-and it’s rating from IMDB. I inferred that the author probably “scraped”
-the data from IMDB’s website.
+A close-up of the first chart shows the popularity of each episode
+plotted for all five seasons of Broad City. A similar chart about the
+popularity of each episode of Twin Peaks would require the title of each
+episode, and its IMDB rating too. So my challenge was simple: find the
+same IMDB data about Twin Peaks, and use my knowledge of R create the
+two visualizations.
 
 ![Broad City Tweet](./broad_city_chart.png)
 
-Already, I noticed one major hurdle that I would have to overcome if I
-wanted to reproduce her chart with the Twin Peaks data. IMDB doesn’t
-actually use the descriptive titles for each episode of Twin Peaks, as
-it does for Broad City. Have a look at the screenshot below. You’ll
-notice that IMDB simply numbers each episode of Twin Peaks.
+The course teaches a few common ways of sourcing data. Querying
+databases, making API requests, and extracing data from `.csv` and MS
+Excel files —are all very useful skills, but as far as I know, there
+isn’t a public Twin Peaks database or API. No; this particualar task
+would call for a different method: web scraping.
 
-![Twin Peaks on IMDB](./twin_peaks_imdb.png)
+Web scraping is the practice of extracting information from web pages in
+an organized manner. Basically, when you scrape a web page, you
+programatically read the page, and save the specific information that
+you need in a convenient format.
 
-This challenge wasn’t going to be easy, but I learned in the course how
-to scrape data from one source, and to put it in a table where I could
-use it to plot a chart. It wouldn’t be too much of a stretch to use what
-I had learned to compile scraped data from multiple sources into a
-single table that I could use to produce the chart.
+For example, below is the [Twin Peaks
+Wiki](https://twinpeaks.fandom.com/wiki/). Notice the blue and yellow
+boxes, which indicate some of the elements to be scraped. The Wiki
+doesn’t include the IMDB rating, but it does include other information
+which will be necessary to create the charts.
 
-I knew that there was another source that I could use to get the episode
-titles. A fan wiki for the show, maintained by who knows who, containing
-the title, and the characters, writers, and director for each episode as
-well. Here’s what the page for episode 2.2 (season 2, episode 2) looks
-like on the Twin Peaks Wiki.
+![Twin Peaks Wiki](./twin_peaks_wiki.jpeg)
 
-![Twin Peaks Wiki](./twin_peaks_wiki.png)
+Using the Web Inspector tool in Firefox, we can view each of these
+elements as HTML. This helps us to understand the order of these
+elements inside the HTML document —information which will be used to
+scrape more precisely and efficiently. Below you can see that the node
+of the HTML document that contains the name of the director of episode
+9, David Lynch, is contained within a list-item with the class
+`pi-data-value`.
 
-R gives us a few handy functions for scraping information from web
-pages, so it didn’t take very much code to get the job done. The varible
-below, `url_base` represents where we’ll scrape the data from, and below
-it are the CSS selectors that we’ll use to find each particular node of
-information on the page.
+![Twin Peaks on IMDB](./twin_peaks_wiki_demo.gif)
+
+Using R to scrape the director for episode 9 is quick work. In fact; it
+only takes a few lines of code. Remember that the director’s name is
+contained within an `li` tag that has the class `pi-data-value`. The
+script below uses this selector to determine which node of text to
+scrape from the page. In this case, the director’s name is contained
+within an `li` with the class `pi-data-value`, which itself is nested
+inside of a `div` with a `data-source` attribute of
+    `'Director'`.
 
 ``` r
-url_base <- "https://twinpeaks.fandom.com/wiki/"
+library(tidyverse)
 ```
 
-Here’s what we’ll scrape from the wiki: the title, date, season, and the
-writer, director, composer, and cast credits for each episode. You can
-see some of these values in the screenshot above (look at the top of the
-image, and in the side-bar too).
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+
+    ## ✔ ggplot2 3.1.1       ✔ purrr   0.3.2  
+    ## ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1
+    ## ✔ tidyr   0.8.3       ✔ stringr 1.4.0  
+    ## ✔ readr   1.3.1       ✔ forcats 0.4.0
+
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
-css_selectors <- list(
-  title = "aside .pi-data-value[data-source='German']",
-  writer = "aside .pi-data[data-source='Writer'] .pi-data-value a",
-  director = "aside .pi-data[data-source='Director'] .pi-data-value",
-  composer = "aside .pi-data[data-source='Music'] .pi-data-value",
-  season = "aside .pi-data-value[data-source='Season']",
-  date = "aside .pi-data[data-source='Airdate'] .pi-data-value",
-  cast = ".WikiaArticle > div > ul > li"
-)
+library(rvest)
 ```
 
-The code below shows how the just a few functions (`read_html`,
-`html_text`, and `html_nodes`) can be used to extract the information we
-need from
-[twinpeaks.fandom.com/wiki/Pilot](https://twinpeaks.fandom.com/wiki/Pilot)
-and store it in a list.
+    ## Loading required package: xml2
+
+    ## 
+    ## Attaching package: 'rvest'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     pluck
+
+    ## The following object is masked from 'package:readr':
+    ## 
+    ##     guess_encoding
 
 ``` r
-pilot_data <- read_html(str_c(url_base, "Pilot", .sep = "")) %>%
-  {list(
-    title = str_remove(html_text(html_nodes(., css_selectors$title)), "or: "),
-    writer = html_text(html_nodes(., css_selectors$writer)),
-    director = html_text(html_nodes(., css_selectors$director)),
-    composer = html_text(html_nodes(., css_selectors$composer)),
-    season = html_text(html_nodes(., css_selectors$season)),
-    date = html_text(html_nodes(., css_selectors$date)),
-    cast = html_text(html_nodes(., css_selectors$cast))
-  )}
+library(xml2)
+library(rvest)
+
+read_html("https://twinpeaks.fandom.com/wiki/Episode_9") %>%
+  html_node("[data-source='Director'] .pi-data-value") %>%
+  html_text()
 ```
 
-The URL for the rest of the episodes follows a slightly different
-pattern from the pilot episode. If the paths were the same, we could
-have done all of our scraping in a single step, but because the
-subseqent episodes are found at
-*twinpeaks.fandom.com/wiki/Episode\_\[episode number\]* (ex.
-[twinpeaks.fandom.com/wiki/Episode\_3](https://twinpeaks.fandom.com/wiki/Episode_3)),
-the code below loops through episodes 2-30, scraping the same
-information as was scraped about the pilot, and it returns a single list
-of all episode data from the pilot through episode \#30 —better known as
-“Beyond Life and Death”.
+    ## [1] "David Lynch"
+
+Notice that here, we’re not passing an argument to the `read_html`
+function. That’s because any function call that follows the `%>%`
+operator receives the returned value of the previous function as it’s
+first parameter.
+
+The title of that episode can be scraped the same way, using a slightly
+different selector that targets the title instead of the director.
 
 ``` r
-all_episodes <- list(pilot_data) %>%
-  append(map(1:29, function(i) {
-    episode_path <- str_c(url_base, "Episode_", i, .sep = "")
-    current_page <- read_html(episode_path)
-    list(
-      title = str_remove(html_text(html_nodes(current_page, css_selectors$title)), "or: "),
-      writer = html_text(html_nodes(current_page, css_selectors$writer)),
-      director = html_text(html_nodes(current_page, css_selectors$director)),
-      composer = html_text(html_nodes(current_page, css_selectors$composer)),
-      season = html_text(html_nodes(current_page, css_selectors$season)),
-      date = html_text(html_nodes(current_page, css_selectors$date)),
-      cast = html_text(html_nodes(current_page, css_selectors$cast))
+read_html("https://twinpeaks.fandom.com/wiki/Episode_9") %>%
+  html_node("[data-source='Series name'] + section .pi-data-value") %>%
+  html_text()
+```
+
+    ## [1] "or: Coma"
+
+This episode was originally titled “Episode 9”, which is why the text
+above has the word “or” in it. We don’t need to include that word in our
+visualization though, so let’s take it out using one additional
+function.
+
+``` r
+read_html("https://twinpeaks.fandom.com/wiki/Episode_9") %>%
+  html_node("[data-source='Series name'] + section .pi-data-value") %>%
+  html_text() %>%
+  str_remove("or: ")
+```
+
+    ## [1] "Coma"
+
+Easy, isn’t it? Damn easy, some might say.
+
+Let’s take this opportunity to re-factor the code to use a function.
+This function will receive an episode URL, and it will return the title
+for that episode. We’ll test it out with episode number 16.
+
+``` r
+get_title <- function(episode_url) {
+  read_html(episode_url) %>%
+  html_node("[data-source='Series name'] + section .pi-data-value") %>%
+  html_text() %>%
+  str_remove("or: ")
+}
+
+get_title("https://twinpeaks.fandom.com/wiki/Episode_16")
+```
+
+    ## [1] "Arbitrary Law"
+
+Functions help us to organize our code into re-useable modules. Let’s
+create a similar function that we can use to generate an episode’s URL
+from it’s sequence number. For example; if we wanted the URL for episode
+22, we could pass it to this function as an argument, and the function
+would return to us the full URL for episode 22.
+
+``` r
+get_episode_url <- function(episode_number) {
+  str_c("https://twinpeaks.fandom.com/wiki/Episode_", episode_number, .sep = "")
+}
+
+get_episode_url(22)
+```
+
+    ## [1] "https://twinpeaks.fandom.com/wiki/Episode_22"
+
+When we call the function and pass a number to it as an argument, it
+returns the full URL to us, as expected.
+
+We use this function to map-through all 29 episodes that aired between
+1989 and 1991 using the `map` function. In case you’ve been using R for
+a while, `map` is similar to `lapply`. This is what it looks like to
+map-through a vector of the numbers 1 to 29. We provide both the vector
+of numbers, and the `get_episode_url` function to `map` as arguments,
+and it returns to us a list of all 29 URLs.
+
+``` r
+episode_urls <- map(1:29, get_episode_url)
+
+episode_urls %>%
+  unlist()
+```
+
+    ##  [1] "https://twinpeaks.fandom.com/wiki/Episode_1" 
+    ##  [2] "https://twinpeaks.fandom.com/wiki/Episode_2" 
+    ##  [3] "https://twinpeaks.fandom.com/wiki/Episode_3" 
+    ##  [4] "https://twinpeaks.fandom.com/wiki/Episode_4" 
+    ##  [5] "https://twinpeaks.fandom.com/wiki/Episode_5" 
+    ##  [6] "https://twinpeaks.fandom.com/wiki/Episode_6" 
+    ##  [7] "https://twinpeaks.fandom.com/wiki/Episode_7" 
+    ##  [8] "https://twinpeaks.fandom.com/wiki/Episode_8" 
+    ##  [9] "https://twinpeaks.fandom.com/wiki/Episode_9" 
+    ## [10] "https://twinpeaks.fandom.com/wiki/Episode_10"
+    ## [11] "https://twinpeaks.fandom.com/wiki/Episode_11"
+    ## [12] "https://twinpeaks.fandom.com/wiki/Episode_12"
+    ## [13] "https://twinpeaks.fandom.com/wiki/Episode_13"
+    ## [14] "https://twinpeaks.fandom.com/wiki/Episode_14"
+    ## [15] "https://twinpeaks.fandom.com/wiki/Episode_15"
+    ## [16] "https://twinpeaks.fandom.com/wiki/Episode_16"
+    ## [17] "https://twinpeaks.fandom.com/wiki/Episode_17"
+    ## [18] "https://twinpeaks.fandom.com/wiki/Episode_18"
+    ## [19] "https://twinpeaks.fandom.com/wiki/Episode_19"
+    ## [20] "https://twinpeaks.fandom.com/wiki/Episode_20"
+    ## [21] "https://twinpeaks.fandom.com/wiki/Episode_21"
+    ## [22] "https://twinpeaks.fandom.com/wiki/Episode_22"
+    ## [23] "https://twinpeaks.fandom.com/wiki/Episode_23"
+    ## [24] "https://twinpeaks.fandom.com/wiki/Episode_24"
+    ## [25] "https://twinpeaks.fandom.com/wiki/Episode_25"
+    ## [26] "https://twinpeaks.fandom.com/wiki/Episode_26"
+    ## [27] "https://twinpeaks.fandom.com/wiki/Episode_27"
+    ## [28] "https://twinpeaks.fandom.com/wiki/Episode_28"
+    ## [29] "https://twinpeaks.fandom.com/wiki/Episode_29"
+
+We can now even map-through the episode URLs, passing each URL to the
+`get_title` function. `map_chr` works just like a regular `map`, except
+that it will *always* return a character.
+
+``` r
+episode_titles <- episode_urls %>%
+  map_chr(get_title)
+
+episode_titles
+```
+
+    ##  [1] "Traces to Nowhere"                               
+    ##  [2] "Zen, or the Skill to Catch a Killer"             
+    ##  [3] "Rest in Pain"                                    
+    ##  [4] "The One-Armed Man"                               
+    ##  [5] "Cooper's Dreams"                                 
+    ##  [6] "Realization Time"                                
+    ##  [7] "The Last Evening"                                
+    ##  [8] "May the Giant Be With You"                       
+    ##  [9] "Coma"                                            
+    ## [10] "The Man Behind Glass"                            
+    ## [11] "Laura's Secret Diary"                            
+    ## [12] "The Orchid's Curse"                              
+    ## [13] "Demons"                                          
+    ## [14] "Lonely Souls"                                    
+    ## [15] "Drive With a Dead Girl"                          
+    ## [16] "Arbitrary Law"                                   
+    ## [17] "Dispute Between Brothers"                        
+    ## [18] "Masked Ball"                                     
+    ## [19] "The Black Widow"                                 
+    ## [20] "Checkmate"                                       
+    ## [21] "Double Play"                                     
+    ## [22] "Slaves and Masters"                              
+    ## [23] "The Condemned Woman"                             
+    ## [24] "Wounds and Scars"                                
+    ## [25] "On the Wings of Love"                            
+    ## [26] "Variations on Relations"                         
+    ## [27] "The Path to the Black Lodge"                     
+    ## [28] "The Night of DecisionMiss Twin Peaks (see below)"
+    ## [29] "Beyond Life and Death"
+
+Something isn’t quite right about our list of episode titles. First of
+all, any true fan will notice instantly that there are actually 30
+episodes in the original series, not 29\! It turns out that the Twin
+Peaks Wiki uses a different URL pattern for the pilot episode. The
+script below scrapes the title from the pilot episode’s page. Notice
+that the URL ends in `/Pilot` instead of `/Episode_0`, or `/Episode_1`
+as might be expected, given the pattern that is used for the subsequent
+29 episodes.
+
+``` r
+get_title("https://twinpeaks.fandom.com/wiki/Pilot")
+```
+
+    ## [1] "Northwest Passage"
+
+This isn’t a problem though. We can simply prepend the episode titles
+with the pilot’s title like this:
+
+``` r
+episode_titles <- episode_titles %>%
+  prepend(get_title("https://twinpeaks.fandom.com/wiki/Pilot"))
+
+episode_titles
+```
+
+    ##  [1] "Northwest Passage"                               
+    ##  [2] "Traces to Nowhere"                               
+    ##  [3] "Zen, or the Skill to Catch a Killer"             
+    ##  [4] "Rest in Pain"                                    
+    ##  [5] "The One-Armed Man"                               
+    ##  [6] "Cooper's Dreams"                                 
+    ##  [7] "Realization Time"                                
+    ##  [8] "The Last Evening"                                
+    ##  [9] "May the Giant Be With You"                       
+    ## [10] "Coma"                                            
+    ## [11] "The Man Behind Glass"                            
+    ## [12] "Laura's Secret Diary"                            
+    ## [13] "The Orchid's Curse"                              
+    ## [14] "Demons"                                          
+    ## [15] "Lonely Souls"                                    
+    ## [16] "Drive With a Dead Girl"                          
+    ## [17] "Arbitrary Law"                                   
+    ## [18] "Dispute Between Brothers"                        
+    ## [19] "Masked Ball"                                     
+    ## [20] "The Black Widow"                                 
+    ## [21] "Checkmate"                                       
+    ## [22] "Double Play"                                     
+    ## [23] "Slaves and Masters"                              
+    ## [24] "The Condemned Woman"                             
+    ## [25] "Wounds and Scars"                                
+    ## [26] "On the Wings of Love"                            
+    ## [27] "Variations on Relations"                         
+    ## [28] "The Path to the Black Lodge"                     
+    ## [29] "The Night of DecisionMiss Twin Peaks (see below)"
+    ## [30] "Beyond Life and Death"
+
+We now have the titles for all 30 episodes, including the pilot. It’s
+time to get the IMDB ratings for each episode. These are found on the
+[IMDB pages about Twin
+Peaks](https://www.imdb.com/title/tt0098936/episodes?season=1&ref_=ttep_ep_sn_nx),
+which you can see a preview of below. Notice also the green box in the
+top-left corner. IMDB splits the episode information into two pages, so
+once again we’ll have to account for multiple URLs in our script.
+
+![Twin Peaks on IMDB](./imdb.jpeg)
+
+The URLs for IMDB aren’t as pretty as the Twin Peaks Wiki ones. Below we
+create another function, `get_season_url` that returns the IMDB url for
+each season when mapped to the numbers 1 and 2. Pay attention to the
+part of the URL that reads `season=1` or `season=2`.
+
+``` r
+get_season_url <- function(season_number) {
+  str_c("https://www.imdb.com/title/tt0098936/episodes?season=", season_number, "&ref_=ttep_ep_sn_nx", .sep = "")
+}
+
+season_urls <- map(1:2, get_season_url)
+
+season_urls
+```
+
+    ## [[1]]
+    ## [1] "https://www.imdb.com/title/tt0098936/episodes?season=1&ref_=ttep_ep_sn_nx"
+    ## 
+    ## [[2]]
+    ## [1] "https://www.imdb.com/title/tt0098936/episodes?season=2&ref_=ttep_ep_sn_nx"
+
+The ratings are contained inside of a `span` tag with the class
+`'ipl-rating-star__rating'`. We can get the IMDB ratings using the same
+code that we used to get the titles for all episodes from the Twin Peaks
+Wiki. This will return to us a list of the episode ratings for each
+season. The `as.numeric` function at the end of the script simply
+ensures that we’re returning the ratings in a number format, rather than
+as text.
+
+``` r
+get_episode_ratings <- function(season_url) {
+  read_html(season_url) %>%
+  html_nodes(".ipl-rating-star.small .ipl-rating-star__rating") %>%
+  html_text() %>%
+  as.numeric()
+}
+
+ratings <- map(season_urls, get_episode_ratings)
+
+ratings
+```
+
+    ## [[1]]
+    ## [1] 8.9 8.4 9.0 8.4 8.3 8.6 8.6 9.1
+    ## 
+    ## [[2]]
+    ##  [1] 9.0 8.7 8.3 8.2 8.5 8.6 9.4 8.6 9.3 7.9 7.6 7.6 7.9 7.8 7.5 7.9 7.7
+    ## [18] 8.1 8.1 8.3 8.6 9.3
+
+The numbers above are the IMDB ratings for each episode of the original
+two seasons of Twin Peaks. We’re almost ready to create our table of
+episodes and their ratings, but first let’s modify the `ratings` list so
+that it tells us slightly more information about the data.
+
+`ratings` is a list of two items —each of which is a list itself. The
+first item is a list of all ratings for season 1, and the second item is
+a list for all ratings for season 2. Using a function called
+`set_names`, we can give each item with a descriptive name.
+
+``` r
+ratings <- ratings %>%
+  set_names(c("Season 1", "Season 2"))
+
+ratings
+```
+
+    ## $`Season 1`
+    ## [1] 8.9 8.4 9.0 8.4 8.3 8.6 8.6 9.1
+    ## 
+    ## $`Season 2`
+    ##  [1] 9.0 8.7 8.3 8.2 8.5 8.6 9.4 8.6 9.3 7.9 7.6 7.6 7.9 7.8 7.5 7.9 7.7
+    ## [18] 8.1 8.1 8.3 8.6 9.3
+
+This is already far more helpful. But let’s go one step further, and
+convert the `ratings` list of two items (`'Season 1'` and `'Season 2'`)
+into a “tibble”, the dataframe of choice in the Tidyverse.
+
+Using the `enframe` function, `ratings` gets converted to a tibble with
+two columns: `season` and `ratings`.
+
+``` r
+ratings <- ratings %>%
+  enframe(name = "season", value = "ratings")
+
+ratings
+```
+
+    ## # A tibble: 2 x 2
+    ##   season   ratings   
+    ##   <chr>    <list>    
+    ## 1 Season 1 <dbl [8]> 
+    ## 2 Season 2 <dbl [22]>
+
+The dataframe above contains a column for `season`, and one for
+`ratings`. There are only two rows, but each rating is a vector of
+multiple ratings; the first containing 8, and the second 22. Together
+these represent all 30 episodes, and we can view the whole set easily
+via the `unnest` function, which will expand or “un-nest” the vectors
+for us.
+
+``` r
+ratings <- ratings %>%
+  unnest()
+
+ratings
+```
+
+    ## # A tibble: 30 x 2
+    ##    season   ratings
+    ##    <chr>      <dbl>
+    ##  1 Season 1     8.9
+    ##  2 Season 1     8.4
+    ##  3 Season 1     9  
+    ##  4 Season 1     8.4
+    ##  5 Season 1     8.3
+    ##  6 Season 1     8.6
+    ##  7 Season 1     8.6
+    ##  8 Season 1     9.1
+    ##  9 Season 2     9  
+    ## 10 Season 2     8.7
+    ## # … with 20 more rows
+
+Finally, we can combine these two sets of values —the titles and the
+ratings —into their own table that we can then use to make our
+visualization.
+
+``` r
+twin_peaks_episodes <- tibble(title = episode_titles,
+                              season = ratings$season,
+                              rating = ratings$ratings)
+
+twin_peaks_episodes
+```
+
+    ## # A tibble: 30 x 3
+    ##    title                               season   rating
+    ##    <chr>                               <chr>     <dbl>
+    ##  1 Northwest Passage                   Season 1    8.9
+    ##  2 Traces to Nowhere                   Season 1    8.4
+    ##  3 Zen, or the Skill to Catch a Killer Season 1    9  
+    ##  4 Rest in Pain                        Season 1    8.4
+    ##  5 The One-Armed Man                   Season 1    8.3
+    ##  6 Cooper's Dreams                     Season 1    8.6
+    ##  7 Realization Time                    Season 1    8.6
+    ##  8 The Last Evening                    Season 1    9.1
+    ##  9 May the Giant Be With You           Season 2    9  
+    ## 10 Coma                                Season 2    8.7
+    ## # … with 20 more rows
+
+But there’s a problem with the table.
+
+It comes back to the funny way that episodes of Twin Peaks didn’t
+originally have titles. When the penultimate episode aired on June 10th,
+1991, it was titled “Episode 29”. Later, the creators of the show, David
+Lynch and Mark Frost called it “The Night of Decision”, but the fans
+began refering to the episode as “Miss Twin Peaks” —the name of the
+beauty pagent that the episode surrounds. Our scraping script picked-up
+both of these titles, and even reference to a footnote about the story
+of two names.
+
+We can view episode 29 in isolation using the `slice` function, which
+will return us the row number that we pass to it —29, in this case.
+
+``` r
+twin_peaks_episodes %>%
+  slice(29)
+```
+
+    ## # A tibble: 1 x 3
+    ##   title                                            season   rating
+    ##   <chr>                                            <chr>     <dbl>
+    ## 1 The Night of DecisionMiss Twin Peaks (see below) Season 2    8.6
+
+Fixing this programatically shouldn’t take much work. Let’s first remove
+the reference to the footnote: `'(see below)'`.
+
+``` r
+twin_peaks_episodes <- twin_peaks_episodes %>%
+  mutate(
+    title = if_else(
+      str_detect(title, "The Night of Decision"),
+      "Miss Twin Peaks",
+      title
     )
-  }))
+  )
+
+twin_peaks_episodes %>%
+  slice(29)
 ```
 
-The variable above —`all_episodes`, is a list of the raw data that we
-scraped from the 30 web pages on the Twin Peaks Wiki. But before we can
-use it in a meaningful way, we need to convert the list of data into a
-tabular (think: table) format. The code below takes our raw data, and
-converts it into a 7-column by 30-row table.
+    ## # A tibble: 1 x 3
+    ##   title           season   rating
+    ##   <chr>           <chr>     <dbl>
+    ## 1 Miss Twin Peaks Season 2    8.6
+
+The table above is exactly what we need to make our first
+visualization\! The code below plots our ratings for each episode and
+generates a clean-looking chart.
 
 ``` r
-episode_tibble <- all_episodes %>%
-  {tibble(
-    progression = imap_int(., ~ .y),
-    title = map_chr(., clean_titles), # custom function to remove irrelevent words from the titles
-    writer = map(., "writer", .null = NA),
-    director = map_chr(., "director"),
-    composer = map_chr(., "composer", .null = NA),
-    season = map_chr(., "season", .null = NA),
-    air_date = lubridate::mdy(map_chr(., "date")),
-    cast = map(., clean_cast), # a custom function to remove irrelevant text from the cast data
-    characters = map(cast, stringr::str_extract, pattern = "(?<= as ).*")
-  )}
-```
+library(hrbrthemes)
 
-Here’s what our table of scraped Twin Peaks data looks like. As you can
-see, there are 7 columns and 30 rows, and that David Lynch only directed
-a few of the episodes himself.
-
-    ## # A tibble: 30 x 9
-    ##    progression title writer director composer season air_date   cast 
-    ##          <int> <chr> <list> <chr>    <chr>    <chr>  <date>     <lis>
-    ##  1           1 Nort… <chr … David L… Angelo … 1      1990-04-08 <chr…
-    ##  2           2 Trac… <chr … Duwayne… Angelo … 1      1990-04-12 <chr…
-    ##  3           3 Zen,… <chr … David L… Angelo … 1      1990-04-19 <chr…
-    ##  4           4 Rest… <chr … Tina Ra… Angelo … 1      1990-04-26 <chr…
-    ##  5           5 The … <chr … Tim Hun… Angelo … 1      1990-05-03 <chr…
-    ##  6           6 Coop… <chr … Lesli L… Angelo … 1      1990-05-10 <chr…
-    ##  7           7 Real… <chr … Caleb D… Angelo … 1      1990-05-17 <chr…
-    ##  8           8 The … <chr … Mark Fr… Angelo … 1      1990-05-23 <chr…
-    ##  9           9 May … <chr … David L… Angelo … 2      1990-09-30 <chr…
-    ## 10          10 Coma  <chr … David L… Angelo … 2      1990-10-06 <chr…
-    ## # … with 20 more rows, and 1 more variable: characters <list>
-
-Now it’s time to scrape the ratings for all 30 episodes from
-[IMDB](https://www.imdb.com/title/tt0098936/episodes?season=1&ref_=ttep_ep_sn_nx).
-To do this, we’ll use the same three functions that we used to scrape
-the Wiki: `read_html`, `html_text`, and `html_nodes`.
-
-``` r
-season_1_ratings <- xml2::read_html(
-  "https://www.imdb.com/title/tt0098936/episodes?season=1&ref_=ttep_ep_sn_nx") %>%
-    html_nodes(".ipl-rating-widget .ipl-rating-star.small .ipl-rating-star__rating") %>%
-    html_text()
-```
-
-``` r
-season_2_ratings <- xml2::read_html(
-  "https://www.imdb.com/title/tt0098936/episodes?season=2&ref_=ttep_ep_sn_nx") %>%
-    html_nodes(".ipl-rating-widget .ipl-rating-star.small .ipl-rating-star__rating") %>%
-    html_text()
-```
-
-The ratings for season 1 and season 2 were hosted on separate pages, so
-I use the `c` function (“c” for “collection”) to combine them into a
-single vector below.
-
-``` r
-all_episode_ratings <- c(season_1_ratings, season_2_ratings)
-```
-
-Here are the ratings (in order) for all 30 episodes. These will be added
-to the episodes table as a new column, which we’ll call
-    `imdb_rating`.
-
-    ##  [1] "8.9" "8.4" "9.0" "8.4" "8.3" "8.6" "8.6" "9.1" "9.0" "8.7" "8.3"
-    ## [12] "8.2" "8.5" "8.6" "9.4" "8.6" "9.3" "7.9" "7.6" "7.6" "7.9" "7.8"
-    ## [23] "7.5" "7.9" "7.7" "8.1" "8.1" "8.3" "8.6" "9.3"
-
-Finally, it’s time to plot our visualization. The following code adds
-the ratings data to the table of Twin Peaks episodes using the `mutate`
-function, and then it invokes `ggplot` to plot each episode against it’s
-IMDB rating. You can see that my visualization isn’t exactly like the
-one from the Broad City tweet, but it’s pretty close.
-
-``` r
-episode_tibble %>%
-  mutate(imdb_rating = as.numeric(all_episode_ratings)) %>%
-  group_by(season) %>%
-  ggplot(aes(x = forcats::fct_reorder(title, progression), y = imdb_rating)) +
-  geom_point(mapping = aes(color = season), shape = 7, size = 3) +
-  geom_text(aes(label = title), nudge_y = -3, angle = 90, size=3) +
-  labs(x= "Episodes", y = "IMDB Rating", title="Twin Peaks episodes ranked by IMDB") + ggplot2::theme_minimal() +
-  theme(axis.text.x=element_blank()) +
+plot_episode_popularity <- function(episode_table) {
+  ggplot(episode_table,
+         aes(x = forcats::fct_reorder(title, episode),
+             y = rating)) +
+  geom_point(aes(color = season),
+             shape = 15,
+             size = 4) +
+  geom_text(aes(label = title),
+            angle = 270,
+            size = 3,
+            hjust = 0,
+            nudge_y = - 0.2) +
+  labs(x = "Episodes",
+       y = "IMDB Rating",
+       title = "Twin Peaks episodes ranked by IMDB") +
+  theme_ipsum_rc(grid="Y") +
+  theme(axis.text.x=element_blank(),
+        panel.grid.major = element_line(linetype = 4),
+        legend.title = element_blank()) +
   ylim(0, NA)
+}
+
+twin_peaks_episodes %>%
+  mutate(episode = row_number()) %>%
+  plot_episode_popularity()
 ```
 
-![](twin_peaks_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](twin_peaks_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
-Despite it’s erratic Neilsen ratings during the show’s original airing,
-we can see from the chart above that the long-term appreciation for Twin
-Peaks is generally positive —without a single episode scoring below 7.5
-out-of 10 stars on IMDB. The season 2 finale was particularly well
-received, as were “Lonely Souls” and “Arbitrary Law” (the episode where
-Laura Palmer’s killer is finally revealed).
-
-The second of the two tweeted Broad City charts visualized the total
-appearances made by each character throughout the series. Here it is
-below:
+Now that we’ve sucessfully reproduced the first chart from Katie’s
+tweet, let’s have a look at the second chart, which visualizes the
+centrality of different characters to the show’s plot, based on the
+number of times they are mentioned in the episode summaries on IMDB.
 
 ![Second Broad City Chart](./broad_city_chart_2.png)
 
-Producing a similar chart with the Twin Peaks data should be quick-work,
-since we’ve already scraped the data and prepared our table. The code
-below returns a narrower table that includes the appearances for each
-character throughout all 30
-episodes.
+In the case of Twin Peaks, we actually have the credits for each episode
+easily available to us on the Twin Peaks Wiki. We’ll simply need to
+scrape the cast data, and then filter-out any irrelevant information,
+like credits for stunt-doubles, etc.
+
+You can see where we’ll be scraping this data from in the GIF below.
+Each cast member exists as a hyperlink (`a`) inside-of an `li` element.
+This information will be used to select the names of the cast members
+when we scrape the data.
+
+![Twin Peaks Wiki - Cast](./twin_peaks_wiki_cast.gif)
+
+Below you’ll see a similar functions that we used to scrape the titles
+from the Twin Peaks Wiki, only modified to select the episode cast and
+characters information. We’ll also use the exact same `episode_urls`
+variable from above. The amount of nodes being scraped here quite large,
+so I’m outputting the cast for episode 21 only to show the raw scraped
+data.
 
 ``` r
-appearances_per_character <- episode_tibble %>% select(title, characters) %>% tidyr::unnest() %>% group_by(characters) %>% summarise(total_appearances = n()) %>% arrange(desc(total_appearances))
+get_cast <- function(episode_url) {
+  read_html(episode_url) %>%
+  html_nodes(".WikiaArticle > div > ul > li") %>%
+  html_text()
+}
+
+cast <- map(c("https://twinpeaks.fandom.com/wiki/Pilot", episode_urls), get_cast)
+
+cast[21]
+```
+
+    ## [[1]]
+    ##  [1] "Kyle MacLachlan as Special Agent Dale Cooper\n"                                                                      
+    ##  [2] "Michael Ontkean as Sheriff Harry S. Truman\n"                                                                        
+    ##  [3] "Madchen Amick as Shelly Johnson\n"                                                                                   
+    ##  [4] "Dana Ashbrook as Bobby Briggs\n"                                                                                     
+    ##  [5] "Richard Beymer as Benjamin Horne\n"                                                                                  
+    ##  [6] "Lara Flynn Boyle as Donna Hayward\n"                                                                                 
+    ##  [7] "Sherilyn Fenn as Audrey Horne\n"                                                                                     
+    ##  [8] "Warren Frost as Dr. Will Hayward\n"                                                                                  
+    ##  [9] "Peggy Lipton as Norma Jennings\n"                                                                                    
+    ## [10] "James Marshall as James Hurley\n"                                                                                    
+    ## [11] "Everett McGill as Big Ed Hurley\n"                                                                                   
+    ## [12] "Jack Nance as Pete Martell (credit only)\n"                                                                          
+    ## [13] "Kimmy Robertson as Lucy Moran\n"                                                                                     
+    ## [14] "Joan Chen as Jocelyn Packard\n"                                                                                      
+    ## [15] "Piper Laurie as Catherine Martell\n"                                                                                 
+    ## [16] "Eric Da Re as Leo Johnson\n"                                                                                         
+    ## [17] "Harry Goaz as Deputy Andy Brennan\n"                                                                                 
+    ## [18] "Michael Horse as Deputy Tommy \"Hawk\" Hill\n"                                                                       
+    ## [19] " Chris Mulkey as Hank Jennings\n"                                                                                    
+    ## [20] "Ian Buchanan as Dick Tremayne\n"                                                                                     
+    ## [21] "James Booth as Ernie Niles\n"                                                                                        
+    ## [22] "David Duchovny as DEA Agent Dennis / Denise Bryson\n"                                                                
+    ## [23] "Gavan O'Herlihy as RCMP Officer Preston King\n"                                                                      
+    ## [24] "Wendy Robie as Nadine Hurley\n"                                                                                      
+    ## [25] "Don Davis as Maj. Garland Briggs\n"                                                                                  
+    ## [26] "Gary Hershberger as Mike Nelson\n"                                                                                   
+    ## [27] "Annette McCarthy as Evelyn Marsh\n"                                                                                  
+    ## [28] "Nicholas Love as Malcolm Sloan\n"                                                                                    
+    ## [29] "Michael Parks as Jean Renault\n"                                                                                     
+    ## [30] "J. Marvin Campbell as M. P. #1\n"                                                                                    
+    ## [31] "Will Seltzer as Mr. Brunston\n"                                                                                      
+    ## [32] "Craig MacLachlan as The Dead Man\n"                                                                                  
+    ## [33] "John Epstein as Utility Stunts\n"                                                                                    
+    ## [34] "Beverly Gordon as Mrs. Brunston [citation needed]"                                                                   
+    ## [35] "Don LaFontaine as Invitation to Love's Announcer (voice) [citation needed]"                                          
+    ## [36] "Lance Davis as Chet Weems (voice)\n"                                                                                 
+    ## [37] "Erika Anderson as Emerald (voice)\n"                                                                                 
+    ## [38] "Timeline: Saturday, March 18\n"                                                                                      
+    ## [39] " When Audrey is crounching by Ben, playing with his figurines, a blue microphone appears at the top of the screen.\n"
+
+The `credits` variable contains all of the scraped credits data from all
+30 episode pages (including the pilot). But it contains a lot of
+irrelevant data too. Have a look at the credits data for episode 21
+above, we can see that it includes credits for voice actors,
+non-appearing cast members (`'credit only'`), and even some notes about
+the episode as well.
+
+We can remove some of the whitespace and formatting from the credits
+using a few simple functions. Notice that the list below is just
+slightly cleaner than the one above. This is because we removed all of
+the `\n` patterns from the strings.
+
+``` r
+clean_cast <- function(episode_cast) {
+  str_squish(episode_cast) %>%
+  str_trim() %>%
+  str_remove_all("\\[([^\\]])\\]") %>% # remove citations
+  str_replace_all("'", '"') # convert single-quotes to double
+}
+
+cast <- map(cast, clean_cast)
+
+cast[21]
+```
+
+    ## [[1]]
+    ##  [1] "Kyle MacLachlan as Special Agent Dale Cooper"                                                                     
+    ##  [2] "Michael Ontkean as Sheriff Harry S. Truman"                                                                       
+    ##  [3] "Madchen Amick as Shelly Johnson"                                                                                  
+    ##  [4] "Dana Ashbrook as Bobby Briggs"                                                                                    
+    ##  [5] "Richard Beymer as Benjamin Horne"                                                                                 
+    ##  [6] "Lara Flynn Boyle as Donna Hayward"                                                                                
+    ##  [7] "Sherilyn Fenn as Audrey Horne"                                                                                    
+    ##  [8] "Warren Frost as Dr. Will Hayward"                                                                                 
+    ##  [9] "Peggy Lipton as Norma Jennings"                                                                                   
+    ## [10] "James Marshall as James Hurley"                                                                                   
+    ## [11] "Everett McGill as Big Ed Hurley"                                                                                  
+    ## [12] "Jack Nance as Pete Martell (credit only)"                                                                         
+    ## [13] "Kimmy Robertson as Lucy Moran"                                                                                    
+    ## [14] "Joan Chen as Jocelyn Packard"                                                                                     
+    ## [15] "Piper Laurie as Catherine Martell"                                                                                
+    ## [16] "Eric Da Re as Leo Johnson"                                                                                        
+    ## [17] "Harry Goaz as Deputy Andy Brennan"                                                                                
+    ## [18] "Michael Horse as Deputy Tommy \"Hawk\" Hill"                                                                      
+    ## [19] "Chris Mulkey as Hank Jennings"                                                                                    
+    ## [20] "Ian Buchanan as Dick Tremayne"                                                                                    
+    ## [21] "James Booth as Ernie Niles"                                                                                       
+    ## [22] "David Duchovny as DEA Agent Dennis / Denise Bryson"                                                               
+    ## [23] "Gavan O\"Herlihy as RCMP Officer Preston King"                                                                    
+    ## [24] "Wendy Robie as Nadine Hurley"                                                                                     
+    ## [25] "Don Davis as Maj. Garland Briggs"                                                                                 
+    ## [26] "Gary Hershberger as Mike Nelson"                                                                                  
+    ## [27] "Annette McCarthy as Evelyn Marsh"                                                                                 
+    ## [28] "Nicholas Love as Malcolm Sloan"                                                                                   
+    ## [29] "Michael Parks as Jean Renault"                                                                                    
+    ## [30] "J. Marvin Campbell as M. P. #1"                                                                                   
+    ## [31] "Will Seltzer as Mr. Brunston"                                                                                     
+    ## [32] "Craig MacLachlan as The Dead Man"                                                                                 
+    ## [33] "John Epstein as Utility Stunts"                                                                                   
+    ## [34] "Beverly Gordon as Mrs. Brunston [citation needed]"                                                                
+    ## [35] "Don LaFontaine as Invitation to Love\"s Announcer (voice) [citation needed]"                                      
+    ## [36] "Lance Davis as Chet Weems (voice)"                                                                                
+    ## [37] "Erika Anderson as Emerald (voice)"                                                                                
+    ## [38] "Timeline: Saturday, March 18"                                                                                     
+    ## [39] "When Audrey is crounching by Ben, playing with his figurines, a blue microphone appears at the top of the screen."
+
+Removing the voice-only credits, and other records that we aren’t
+interested in is also quite simple. The function below will keep the
+records that we want, and remove any of the ones that we don’t. Each
+episode’s cast list gets mapped-to the `filter_credits` function, and
+the output is a much tidyer list of actual cast members who appeared in
+the episode.
+
+``` r
+filter_credits <- function(episode_credits) {
+  keep(episode_credits, str_detect(episode_credits, " as ")) %>%
+    discard(str_length(.) > 50) %>% # remove any actual text that was scraped
+    discard(str_detect(., "credit only")) %>% # remove non-appearing cast members
+    discard(str_detect(., "performer")) %>% # remove unknown actors
+    discard(str_detect(., "voice")) %>% # remove voice-only cast members
+    discard(str_detect(., "deleted scene")) %>%
+    discard(str_detect(., "archive footage")) %>%
+    discard(str_detect(., "citation needed")) %>%
+    discard(str_detect(., "Invitation To Love")) # remove soap opera credits
+}
+
+cast <- map(cast, clean_cast) %>%
+  map(filter_credits)
+
+cast[21]
+```
+
+    ## [[1]]
+    ##  [1] "Kyle MacLachlan as Special Agent Dale Cooper"      
+    ##  [2] "Michael Ontkean as Sheriff Harry S. Truman"        
+    ##  [3] "Madchen Amick as Shelly Johnson"                   
+    ##  [4] "Dana Ashbrook as Bobby Briggs"                     
+    ##  [5] "Richard Beymer as Benjamin Horne"                  
+    ##  [6] "Lara Flynn Boyle as Donna Hayward"                 
+    ##  [7] "Sherilyn Fenn as Audrey Horne"                     
+    ##  [8] "Warren Frost as Dr. Will Hayward"                  
+    ##  [9] "Peggy Lipton as Norma Jennings"                    
+    ## [10] "James Marshall as James Hurley"                    
+    ## [11] "Everett McGill as Big Ed Hurley"                   
+    ## [12] "Kimmy Robertson as Lucy Moran"                     
+    ## [13] "Joan Chen as Jocelyn Packard"                      
+    ## [14] "Piper Laurie as Catherine Martell"                 
+    ## [15] "Eric Da Re as Leo Johnson"                         
+    ## [16] "Harry Goaz as Deputy Andy Brennan"                 
+    ## [17] "Michael Horse as Deputy Tommy \"Hawk\" Hill"       
+    ## [18] "Chris Mulkey as Hank Jennings"                     
+    ## [19] "Ian Buchanan as Dick Tremayne"                     
+    ## [20] "James Booth as Ernie Niles"                        
+    ## [21] "David Duchovny as DEA Agent Dennis / Denise Bryson"
+    ## [22] "Gavan O\"Herlihy as RCMP Officer Preston King"     
+    ## [23] "Wendy Robie as Nadine Hurley"                      
+    ## [24] "Don Davis as Maj. Garland Briggs"                  
+    ## [25] "Gary Hershberger as Mike Nelson"                   
+    ## [26] "Annette McCarthy as Evelyn Marsh"                  
+    ## [27] "Nicholas Love as Malcolm Sloan"                    
+    ## [28] "Michael Parks as Jean Renault"                     
+    ## [29] "J. Marvin Campbell as M. P. #1"                    
+    ## [30] "Will Seltzer as Mr. Brunston"                      
+    ## [31] "Craig MacLachlan as The Dead Man"                  
+    ## [32] "John Epstein as Utility Stunts"
+
+Much nicer. Now we have a tidy list of the cast members for each
+episode. But still; what we really need are just the *characters* that
+appear in each episode. Thankfully, this is quick-work too. When mapped
+to a string, the `str_extract` function will remove whatever pattern we
+pass to it.
+
+``` r
+characters <- map(cast, stringr::str_extract, pattern = "(?<= as ).*")
+
+characters[21]
+```
+
+    ## [[1]]
+    ##  [1] "Special Agent Dale Cooper"        "Sheriff Harry S. Truman"         
+    ##  [3] "Shelly Johnson"                   "Bobby Briggs"                    
+    ##  [5] "Benjamin Horne"                   "Donna Hayward"                   
+    ##  [7] "Audrey Horne"                     "Dr. Will Hayward"                
+    ##  [9] "Norma Jennings"                   "James Hurley"                    
+    ## [11] "Big Ed Hurley"                    "Lucy Moran"                      
+    ## [13] "Jocelyn Packard"                  "Catherine Martell"               
+    ## [15] "Leo Johnson"                      "Deputy Andy Brennan"             
+    ## [17] "Deputy Tommy \"Hawk\" Hill"       "Hank Jennings"                   
+    ## [19] "Dick Tremayne"                    "Ernie Niles"                     
+    ## [21] "DEA Agent Dennis / Denise Bryson" "RCMP Officer Preston King"       
+    ## [23] "Nadine Hurley"                    "Maj. Garland Briggs"             
+    ## [25] "Mike Nelson"                      "Evelyn Marsh"                    
+    ## [27] "Malcolm Sloan"                    "Jean Renault"                    
+    ## [29] "M. P. #1"                         "Mr. Brunston"                    
+    ## [31] "The Dead Man"                     "Utility Stunts"
+
+The list above is exactly what we need\! Now that we’ve isolated the
+characters for all 30 episodes of Twin Peaks, we can add them to our
+table of episode data as a new column named `characters`. The `mutate`
+function will create a new column from the data that we pass to it —the
+`characters` list, in this case.
+
+``` r
+twin_peaks_episodes <- twin_peaks_episodes %>%
+  mutate(characters)
+
+twin_peaks_episodes
+```
+
+    ## # A tibble: 30 x 4
+    ##    title                               season   rating characters
+    ##    <chr>                               <chr>     <dbl> <list>    
+    ##  1 Northwest Passage                   Season 1    8.9 <chr [54]>
+    ##  2 Traces to Nowhere                   Season 1    8.4 <chr [33]>
+    ##  3 Zen, or the Skill to Catch a Killer Season 1    9   <chr [37]>
+    ##  4 Rest in Pain                        Season 1    8.4 <chr [38]>
+    ##  5 The One-Armed Man                   Season 1    8.3 <chr [31]>
+    ##  6 Cooper's Dreams                     Season 1    8.6 <chr [32]>
+    ##  7 Realization Time                    Season 1    8.6 <chr [38]>
+    ##  8 The Last Evening                    Season 1    9.1 <chr [32]>
+    ##  9 May the Giant Be With You           Season 2    9   <chr [40]>
+    ## 10 Coma                                Season 2    8.7 <chr [30]>
+    ## # … with 20 more rows
+
+How simple was that\! The new colum contains rows that look like `<chr
+[33]>`. This means that the row contains a list of 33 strings, or
+“characters” as they’re called in R. No pun intended.
+
+In order to find the total number of appearances for each character
+throughout the show, we need to first “un-nest” the column of characters
+in each episode. The output below will show you what I mean by
+“un-nesting”. The `unnest` function is going to expand our tibble from
+just 30 rows to a whopping 955 rows\! It does this by creating a row for
+every single character appearance. In a way, this changes the nature of
+our tibble from a tibble of Twin Peaks episodes, to a tibble of all
+character appearances throughout seasons 1 and 2 of Twin Peaks.
+
+``` r
+all_character_appearances <- twin_peaks_episodes %>%
+  unnest()
+
+all_character_appearances
+```
+
+    ## # A tibble: 955 x 4
+    ##    title             season   rating characters               
+    ##    <chr>             <chr>     <dbl> <chr>                    
+    ##  1 Northwest Passage Season 1    8.9 Special Agent Dale Cooper
+    ##  2 Northwest Passage Season 1    8.9 Sheriff Harry S. Truman  
+    ##  3 Northwest Passage Season 1    8.9 Shelly Johnson           
+    ##  4 Northwest Passage Season 1    8.9 Bobby Briggs             
+    ##  5 Northwest Passage Season 1    8.9 Benjamin Horne           
+    ##  6 Northwest Passage Season 1    8.9 Donna Hayward            
+    ##  7 Northwest Passage Season 1    8.9 Audrey Horne             
+    ##  8 Northwest Passage Season 1    8.9 Dr. Will Hayward         
+    ##  9 Northwest Passage Season 1    8.9 Norma Jennings           
+    ## 10 Northwest Passage Season 1    8.9 James Hurley             
+    ## # … with 945 more rows
+
+The tibble above contains all appearances for every character in the
+show between seasons 1 and 2. By applying the `filter` function to
+filter for a particular character, we can quickly find all of episodes
+that a character appears in.
+
+``` r
+all_character_appearances %>%
+  filter(characters == "Betty Briggs")
+```
+
+    ## # A tibble: 7 x 4
+    ##   title                 season   rating characters  
+    ##   <chr>                 <chr>     <dbl> <chr>       
+    ## 1 Northwest Passage     Season 1    8.9 Betty Briggs
+    ## 2 Traces to Nowhere     Season 1    8.4 Betty Briggs
+    ## 3 Rest in Pain          Season 1    8.4 Betty Briggs
+    ## 4 Cooper's Dreams       Season 1    8.6 Betty Briggs
+    ## 5 Masked Ball           Season 2    7.6 Betty Briggs
+    ## 6 The Black Widow       Season 2    7.6 Betty Briggs
+    ## 7 Beyond Life and Death Season 2    9.3 Betty Briggs
+
+It’s time now to summarize the character appearances. We want a list
+containing each character, as well as the total number of episodes that
+they appeared in. Using the `group_by` function, we can group-together
+all of the episodes that each character appeared-in. For Betty Briggs,
+this would mean that we’re grouping-together the 7 appearances that you
+can see in the tibble above.
+
+`group_by` is different from `filter` though, because `group_by` will
+always return the entire data set that was passed to it. But it enables
+us to use another very useful function: `summarize`.
+
+We’ll use `summarize` to count the number of episodes that each
+character appears in, and to return a tibble of all 189 charaters and
+the number of appearances for each.
+
+``` r
+appearances_per_character <- all_character_appearances %>%
+  group_by(characters) %>%
+  summarise(total_appearances = n()) %>%
+  arrange(desc(total_appearances))
+
+appearances_per_character
 ```
 
     ## # A tibble: 189 x 2
@@ -303,35 +975,70 @@ appearances_per_character <- episode_tibble %>% select(title, characters) %>% ti
     ## 10 Bobby Briggs                                25
     ## # … with 179 more rows
 
-Here’s how the data would look as a bar chart, similar to the Broad City
-bar chart. This is a more basic chart, so it requires less code than the
-first one. I also made it a vertical bar chart, since Twin Peaks
-features just a few more central characters than Broad City. For
-readability, I included only characters who appeared in at least
-one-third of all episodes.
+Let’s quickly try applying the same “Betty Briggs” filter to the
+`appearances_per_character` tibble. This time, it will return a single
+row, but the value of the `total_appearances` column will be 7; the
+number of rows that was returned the last time that we filtered for
+Betty Briggs.
 
 ``` r
 appearances_per_character %>%
-  filter(total_appearances > 10) %>%
-  ggplot(aes(x = forcats::fct_reorder(characters, total_appearances), y = total_appearances)) +
-  geom_col(mapping = aes(fill = characters)) +
-  coord_flip() +
-  labs(y = "Total appearances", title="Twin Peaks characters by their appearances") + theme_minimal() + theme(legend.position="none", axis.title.y=element_blank())
+  filter(characters == "Betty Briggs")
 ```
 
-![](twin_peaks_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+    ## # A tibble: 1 x 2
+    ##   characters   total_appearances
+    ##   <chr>                    <int>
+    ## 1 Betty Briggs                 7
 
-Looking at the chart, there are no suprises that Special Agent Cooper
-tops the list of appearances, but it’s somewhat interesting to notice
-that he shares that position with Sherriff Truman, Donna Hayward, and
-even Benjamin Horne. Maybe the lesson here is that Twin Peaks isn’t a
-show about a particular character; it’s a show about the whole town.
+It’s *almost* time to plot our chart.
 
------
+But before we do that, let’s filter the list of characters down to a
+smaller, more relevant list. It isn’t very interesting to know about
+minor characters who only appeared in one or two episodes. In fact,
+let’s filter-out the bottom third of all characters, keeping only
+those who appear in more than 10 episodes. Using the `filter` function,
+we can refine the number of characters to plot from 189 to just 29. This
+should make for a far more readable chart.
 
-This article is a summary of the skills that I’ve learned since I began
-following [“50 Things You Need to Know About
-Data”](https://exts.epfl.ch/courses-programs/50-things-you-need-to-know-about-data),
-a course offered by the EPFL Extension School. I’m very much enjoying
-this course, and I would recommend it to anyone who wants to learn how
-to work with data in a hands-on way.
+``` r
+frequently_appearing_characters <- appearances_per_character %>%
+  filter(total_appearances > 10)
+
+frequently_appearing_characters
+```
+
+    ## # A tibble: 29 x 2
+    ##    characters                   total_appearances
+    ##    <chr>                                    <int>
+    ##  1 Benjamin Horne                              30
+    ##  2 Donna Hayward                               30
+    ##  3 Sheriff Harry S. Truman                     30
+    ##  4 Special Agent Dale Cooper                   30
+    ##  5 Audrey Horne                                28
+    ##  6 "Deputy Tommy \"Hawk\" Hill"                28
+    ##  7 Deputy Andy Brennan                         26
+    ##  8 Dr. Will Hayward                            26
+    ##  9 Shelly Johnson                              26
+    ## 10 Bobby Briggs                                25
+    ## # … with 19 more rows
+
+Finally; using many of the same functions that we used to produce the
+IMDB rankings chart, we can plot a horizonal column chart of the
+characters according to how many episodes they appear in.
+
+``` r
+frequently_appearing_characters %>%
+  ggplot(aes(x = fct_reorder(characters,
+                             total_appearances),
+             y = total_appearances)) +
+  geom_col(mapping = aes(fill = characters)) +
+  coord_flip() +
+  labs(y = "Total appearances",
+       title = "Twin Peaks characters by their appearances") +
+  theme_ipsum_rc(grid="X") +
+  theme(legend.position="none",
+        axis.title.y = element_blank())
+```
+
+![](twin_peaks_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
