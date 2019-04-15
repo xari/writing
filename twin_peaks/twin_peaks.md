@@ -1,3 +1,5 @@
+Scraping web data with R
+================
 
 Being an employee of the EPFL Extension School has it’s perks.
 
@@ -45,8 +47,10 @@ source: web scraping.
 
 -----
 
-You remember Twin Peaks, don’t you? The show about owls, strong coffee,
-and the mystery surrounding the death of a girl named Laura Palmer?
+You remember Twin Peaks, don’t you? The show about owls, cherry pie,
+deep black coffee, and the mystery of Laura Palmer?
+
+![Damn fine coffee](./cooper.gif)
 
 This show is a favorite of mine, and I think that if you ever make the
 time to watch it, you’ll enjoy it too.
@@ -86,22 +90,18 @@ two visualizations.
 
 ![Broad City Tweet](./broad_city_chart.png)
 
-The course teaches a few common ways of sourcing data. Querying
-databases, making API requests, and extracing data from `.csv` and MS
-Excel files —are all very useful skills, but as far as I know, there
-isn’t a public Twin Peaks database or API. No; this particualar task
-would call for a different method: web scraping.
+Since IMDB doesn’t have a public API or database that we can query to
+get the information that we need, we’ll have to scrape it using R.
+Scraping is the process of extracting targeted data from HTML pages, so
+that we can use that data in our work. This is one of several ways to
+source data that is taught in the course, and we’ll use the scraped data
+to plot visualizations like the one above.
 
-Web scraping is the practice of extracting information from web pages in
-an organized manner. Basically, when you scrape a web page, you
-programatically read the page, and save the specific information that
-you need in a convenient format.
-
-For example, below is the [Twin Peaks
+We’ll begin with the [Twin Peaks
 Wiki](https://twinpeaks.fandom.com/wiki/). Notice the blue and yellow
-boxes, which indicate some of the elements to be scraped. The Wiki
-doesn’t include the IMDB rating, but it does include other information
-which will be necessary to create the charts.
+boxes in the image below, which indicate some of the elements to be
+scraped. The Wiki doesn’t include the IMDB rating, but it does include
+other information which will be necessary to create the charts.
 
 ![Twin Peaks Wiki](./twin_peaks_wiki.jpeg)
 
@@ -128,14 +128,14 @@ inside of a `div` with a `data-source` attribute of
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.1.1       ✔ purrr   0.3.2  
     ## ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1
     ## ✔ tidyr   0.8.3       ✔ stringr 1.4.0  
     ## ✔ readr   1.3.1       ✔ forcats 0.4.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -1042,3 +1042,26 @@ frequently_appearing_characters %>%
 ```
 
 ![](twin_peaks_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+-----
+
+In this post, we scraped HTML data from several web pages to compile
+data about the cult classic TV series Twin Peaks, and then we created
+two charts from our scraped data.
+
+But before you get the wrong impression, and think that [“50 Things You
+Need to Know About
+Data”](https://exts.epfl.ch/courses-programs/50-things-you-need-to-know-about-data)
+is a course about web scraping —I need to be clear that this is just one
+topic among many that you’ll study if you follow the course.
+
+![Inputs and Outputs with R](./inputs-outputs.png)
+
+As a newcomer to data science and data visualization, I found this
+course inspiring. And as a web developer, it was refreshingly fun. I’d
+recommend it to anyone who is interested in working with data, but who
+hasn’t yet wrangled data programatically.
+
+Special thanks to [Katie Segretti](http://data-chips.com/), whose charts
+were the inspiration for this article, and who graciously agreed to let
+me use her visualizations here as well.
