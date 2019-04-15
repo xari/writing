@@ -1,4 +1,4 @@
-Scraping web data with R
+Scraping web data with R & the Tidyverse
 ================
 
 Being an employee of the EPFL Extension School has it’s perks.
@@ -48,7 +48,7 @@ source: web scraping.
 -----
 
 You remember Twin Peaks, don’t you? The show about owls, cherry pie,
-deep black coffee, and the mystery of Laura Palmer?
+deep black coffee, and the murder-mystery of Laura Palmer?
 
 ![Damn fine coffee](./cooper.gif)
 
@@ -479,7 +479,7 @@ ratings
     ## 1 Season 1 <dbl [8]> 
     ## 2 Season 2 <dbl [22]>
 
-The dataframe above contains a column for `season`, and one for
+The data-frame above contains a column for `season`, and one for
 `ratings`. There are only two rows, but each rating is a vector of
 multiple ratings; the first containing 8, and the second 22. Together
 these represent all 30 episodes, and we can view the whole set easily
@@ -541,8 +541,8 @@ It comes back to the funny way that episodes of Twin Peaks didn’t
 originally have titles. When the penultimate episode aired on June 10th,
 1991, it was titled “Episode 29”. Later, the creators of the show, David
 Lynch and Mark Frost called it “The Night of Decision”, but the fans
-began refering to the episode as “Miss Twin Peaks” —the name of the
-beauty pagent that the episode surrounds. Our scraping script picked-up
+began referring to the episode as “Miss Twin Peaks” —the name of the
+beauty pageant that the episode surrounds. Our scraping script picked-up
 both of these titles, and even reference to a footnote about the story
 of two names.
 
@@ -559,8 +559,8 @@ twin_peaks_episodes %>%
     ##   <chr>                                            <chr>     <dbl>
     ## 1 The Night of DecisionMiss Twin Peaks (see below) Season 2    8.6
 
-Fixing this programatically shouldn’t take much work. Let’s first remove
-the reference to the footnote: `'(see below)'`.
+Fixing this programmatically shouldn’t take much work. Let’s first
+remove the reference to the footnote: `'(see below)'`.
 
 ``` r
 twin_peaks_episodes <- twin_peaks_episodes %>%
@@ -703,7 +703,7 @@ above, we can see that it includes credits for voice actors,
 non-appearing cast members (`'credit only'`), and even some notes about
 the episode as well.
 
-We can remove some of the whitespace and formatting from the credits
+We can remove some of the white-space and formatting from the credits
 using a few simple functions. Notice that the list below is just
 slightly cleaner than the one above. This is because we removed all of
 the `\n` patterns from the strings.
@@ -880,7 +880,7 @@ twin_peaks_episodes
     ## 10 Coma                                Season 2    8.7 <chr [30]>
     ## # … with 20 more rows
 
-How simple was that\! The new colum contains rows that look like `<chr
+How simple was that\! The new column contains rows that look like `<chr
 [33]>`. This means that the row contains a list of 33 strings, or
 “characters” as they’re called in R. No pun intended.
 
@@ -948,7 +948,7 @@ always return the entire data set that was passed to it. But it enables
 us to use another very useful function: `summarize`.
 
 We’ll use `summarize` to count the number of episodes that each
-character appears in, and to return a tibble of all 189 charaters and
+character appears in, and to return a tibble of all 189 characters and
 the number of appearances for each.
 
 ``` r
@@ -1060,7 +1060,7 @@ topic among many that you’ll study if you follow the course.
 As a newcomer to data science and data visualization, I found this
 course inspiring. And as a web developer, it was refreshingly fun. I’d
 recommend it to anyone who is interested in working with data, but who
-hasn’t yet wrangled data programatically.
+hasn’t yet wrangled data programmatically.
 
 Special thanks to [Katie Segretti](http://data-chips.com/), whose charts
 were the inspiration for this article, and who graciously agreed to let

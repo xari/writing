@@ -1,5 +1,5 @@
 ---
-title: "Scraping web data with R"
+title: "Scraping web data with R & the Tidyverse"
 output: github_document
 ---
 
@@ -19,7 +19,7 @@ But I'm a web guy, so this article focuses on a particularly crafty data source:
 
 ---
 
-You remember Twin Peaks, don't you? The show about owls, cherry pie, deep black coffee, and the mystery of Laura Palmer?
+You remember Twin Peaks, don't you? The show about owls, cherry pie, deep black coffee, and the murder-mystery of Laura Palmer?
 
 ![Damn fine coffee](./cooper.gif)
 
@@ -196,7 +196,7 @@ ratings <- ratings %>%
 ratings
 ```
 
-The dataframe above contains a column for `season`, and one for `ratings`. There are only two rows, but each rating is a vector of multiple ratings; the first containing 8, and the second 22. Together these represent all 30 episodes, and we can view the whole set easily via the `unnest` function, which will expand or "un-nest" the vectors for us.
+The data-frame above contains a column for `season`, and one for `ratings`. There are only two rows, but each rating is a vector of multiple ratings; the first containing 8, and the second 22. Together these represent all 30 episodes, and we can view the whole set easily via the `unnest` function, which will expand or "un-nest" the vectors for us.
 
 ```{r}
 ratings <- ratings %>%
@@ -217,7 +217,7 @@ twin_peaks_episodes
 
 But there's a problem with the table.
 
-It comes back to the funny way that episodes of Twin Peaks didn't originally have titles. When the penultimate episode aired on June 10th, 1991, it was titled "Episode 29". Later, the creators of the show, David Lynch and Mark Frost called it "The Night of Decision", but the fans began refering to the episode as "Miss Twin Peaks" —the name of the beauty pagent that the episode surrounds. Our scraping script picked-up both of these titles, and even reference to a footnote about the story of two names.
+It comes back to the funny way that episodes of Twin Peaks didn't originally have titles. When the penultimate episode aired on June 10th, 1991, it was titled "Episode 29". Later, the creators of the show, David Lynch and Mark Frost called it "The Night of Decision", but the fans began referring to the episode as "Miss Twin Peaks" —the name of the beauty pageant that the episode surrounds. Our scraping script picked-up both of these titles, and even reference to a footnote about the story of two names.
 
 We can view episode 29 in isolation using the `slice` function, which will return us the row number that we pass to it —29, in this case.
 
@@ -226,7 +226,7 @@ twin_peaks_episodes %>%
   slice(29)
 ```
 
-Fixing this programatically shouldn't take much work. Let's first remove the reference to the footnote: `'(see below)'`.
+Fixing this programmatically shouldn't take much work. Let's first remove the reference to the footnote: `'(see below)'`.
 
 ```{r}
 twin_peaks_episodes <- twin_peaks_episodes %>%
@@ -300,7 +300,7 @@ cast[21]
 
 The `credits` variable contains all of the scraped credits data from all 30 episode pages (including the pilot). But it contains a lot of irrelevant data too. Have a look at the credits data for episode 21 above, we can see that it includes credits for voice actors, non-appearing cast members (`'credit only'`), and even some notes about the episode as well.
 
-We can remove some of the whitespace and formatting from the credits using a few simple functions. Notice that the list below is just slightly cleaner than the one above. This is because we removed all of the `\n` patterns from the strings.
+We can remove some of the white-space and formatting from the credits using a few simple functions. Notice that the list below is just slightly cleaner than the one above. This is because we removed all of the `\n` patterns from the strings.
 
 ```{r}
 clean_cast <- function(episode_cast) {
@@ -353,7 +353,7 @@ twin_peaks_episodes <- twin_peaks_episodes %>%
 twin_peaks_episodes
 ```
 
-How simple was that! The new colum contains rows that look like `<chr [33]>`. This means that the row contains a list of 33 strings, or "characters" as they're called in R. No pun intended.
+How simple was that! The new column contains rows that look like `<chr [33]>`. This means that the row contains a list of 33 strings, or "characters" as they're called in R. No pun intended.
 
 In order to find the total number of appearances for each character throughout the show, we need to first "un-nest" the column of characters in each episode. The output below will show you what I mean by "un-nesting". The `unnest` function is going to expand our tibble from just 30 rows to a whopping 955 rows! It does this by creating a row for every single character appearance. In a way, this changes the nature of our tibble from a tibble of Twin Peaks episodes, to a tibble of all character appearances throughout seasons 1 and 2 of Twin Peaks.
 
@@ -375,7 +375,7 @@ It's time now to summarize the character appearances. We want a list containing 
 
 `group_by` is different from `filter` though, because `group_by` will always return the entire data set that was passed to it. But it enables us to use another very useful function: `summarize`.
 
-We'll use `summarize` to count the number of episodes that each character appears in, and to return a tibble of all 189 charaters and the number of appearances for each.
+We'll use `summarize` to count the number of episodes that each character appears in, and to return a tibble of all 189 characters and the number of appearances for each.
 
 ```{r}
 appearances_per_character <- all_character_appearances %>%
@@ -428,6 +428,6 @@ But before you get the wrong impression, and think that ["50 Things You Need to 
 
 ![Inputs and Outputs with R](./inputs-outputs.png)
 
-As a newcomer to data science and data visualization, I found this course inspiring. And as a web developer, it was refreshingly fun. I'd recommend it to anyone who is interested in working with data, but who hasn't yet wrangled data programatically.
+As a newcomer to data science and data visualization, I found this course inspiring. And as a web developer, it was refreshingly fun. I'd recommend it to anyone who is interested in working with data, but who hasn't yet wrangled data programmatically.
 
 Special thanks to [Katie Segretti](http://data-chips.com/), whose charts were the inspiration for this article, and who graciously agreed to let me use her visualizations here as well.
