@@ -39,7 +39,7 @@ In [the tweet](https://twitter.com/katiesegreti/status/1111729535266013184), [Ka
 
 A close-up of the first chart shows the popularity of each episode plotted for all five seasons of Broad City. A similar chart about the popularity of each episode of Twin Peaks would require the title of each episode, and its IMDB rating too. So my challenge was simple: find the same IMDB data about Twin Peaks, and use my knowledge of R create the two visualizations.
 
-![Broad City Tweet](./broad_city_chart.png)
+![Broad City Episodes ranked by IMDB](./broad_city_chart.png)
 
 Since IMDB doesn't have a public API or database that we can query to get the information that we need, we'll have to scrape it using R. Scraping is the process of extracting targeted data from HTML pages, so that we can use that data in our work. This is one of several ways to source data that is taught in the course, and we'll use the scraped data to plot visualizations like the one above.
 
@@ -49,7 +49,7 @@ We'll begin with the [Twin Peaks Wiki](https://twinpeaks.fandom.com/wiki/). Noti
 
 Using the Web Inspector tool in Firefox, we can view each of these elements as HTML. This helps us to understand the order of these elements inside the HTML document —information which will be used to scrape more precisely and efficiently. Below you can see that the node of the HTML document that contains the name of the director of episode 9, David Lynch, is contained within a list-item with the class `pi-data-value`.
 
-![Twin Peaks on IMDB](./twin_peaks_wiki_demo.gif)
+![Twin Peaks Wiki HTML Nodes](./twin_peaks_wiki_demo.gif)
 
 Using R to scrape the director for episode 9 is quick work. In fact; it only takes a few lines of code. Remember that the director's name is contained within an `li` tag that has the class `pi-data-value`. The script below uses this selector to determine which node of text to scrape from the page. In this case, the director's name is contained within an `li` with the class `pi-data-value`, which itself is nested inside of a `div` with a `data-source` attribute of `'Director'`.
 
@@ -145,7 +145,7 @@ episode_titles
 
 We now have the titles for all 30 episodes, including the pilot. It's time to get the IMDB ratings for each episode. These are found on the [IMDB pages about Twin Peaks](https://www.imdb.com/title/tt0098936/episodes?season=1&ref_=ttep_ep_sn_nx), which you can see a preview of below. Notice also the green box in the top-left corner. IMDB splits the episode information into two pages, so once again we'll have to account for multiple URLs in our script.
 
-![Twin Peaks on IMDB](./imdb.jpeg)
+![Twin Peaks ratings on IMDB](./imdb.jpeg)
 
 The URLs for IMDB aren't as pretty as the Twin Peaks Wiki ones. Below we create another function, `get_season_url` that returns the IMDB url for each season when mapped to the numbers 1 and 2. Pay attention to the part of the URL that reads `season=1` or `season=2`.
 
@@ -276,13 +276,13 @@ twin_peaks_episodes %>%
 
 Now that we've sucessfully reproduced the first chart from Katie's tweet, let's have a look at the second chart, which visualizes the centrality of different characters to the show's plot, based on the number of times they are mentioned in the episode summaries on IMDB.
 
-![Second Broad City Chart](./broad_city_chart_2.png)
+![Broad City characters mentioned in episode summaries](./broad_city_chart_2.png)
 
 In the case of Twin Peaks, we actually have the credits for each episode easily available to us on the Twin Peaks Wiki. We'll simply need to scrape the cast data, and then filter-out any irrelevant information, like credits for stunt-doubles, etc.
 
 You can see where we'll be scraping this data from in the GIF below. Each cast member exists as a hyperlink (`a`) inside-of an `li` element. This information will be used to select the names of the cast members when we scrape the data.
 
-![Twin Peaks Wiki - Cast](./twin_peaks_wiki_cast.gif)
+![Twin Peaks Wiki - Cast Nodes](./twin_peaks_wiki_cast.gif)
 
 Below you'll see a similar functions that we used to scrape the titles from the Twin Peaks Wiki, only modified to select the episode cast and characters information. We'll also use the exact same `episode_urls` variable from above. The amount of nodes being scraped here quite large, so I'm outputting the cast for episode 21 only to show the raw scraped data.
 
@@ -426,7 +426,7 @@ In this post, we scraped HTML data from several web pages to compile data about 
 
 But before you get the wrong impression, and think that ["50 Things You Need to Know About Data"](https://exts.epfl.ch/courses-programs/50-things-you-need-to-know-about-data) is a course about web scraping —I need to be clear that this is just one topic among many that you'll study if you follow the course.
 
-![Inputs and Outputs with R](./inputs-outputs.png)
+![Other concepts covered in the course.](./inputs-outputs.png)
 
 As a newcomer to data science and data visualization, I found this course inspiring. And as a web developer, it was refreshingly fun. I'd recommend it to anyone who is interested in working with data, but who hasn't yet wrangled data programmatically.
 
